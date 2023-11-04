@@ -121,6 +121,25 @@ class Sqlite {
         `);
   }
 
+  // 根據所有 instance 中, 確認是否有正在執行的 instance, 透過各服務的 boolean 值, 有其中一個非 true, 則代表正在執行
+  getRunningInstance(): boolean {
+    const instance = this.db.query<Instance, []>(`
+        SELECT * FROM instances;
+        `);
+    const instances = instance.all();
+    for (const instance of instances) {
+      if (
+        !instance.start ||
+        !instance.docker ||
+        !instance.socks ||
+        !instance.ipsecVpn
+      ) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   // 初始化資料表
   // 表1: users
   // - id:唯一編號
