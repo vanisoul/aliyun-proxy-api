@@ -30,7 +30,10 @@ class Client {
   }
 
   // 查詢目前所有的ECS實例
-  async describeInstances(): Promise<any> {
+  async describeInstances(): Promise<
+    ECSClientLib.DescribeInstancesResponseBody
+  > {
+    console.log("============== describeInstances ==============");
     const describeInstancesRequest = new ECSClientLib.DescribeInstancesRequest({
       regionId: this.regionId,
     });
@@ -42,6 +45,7 @@ class Client {
       runtime,
     );
 
+    console.log("============== describeInstances ==============");
     return resp.body;
   }
 
@@ -148,19 +152,21 @@ class Client {
   }
 
   // 根據ID刪除ECS實例
-  async deleteInstance(id: string): Promise<any> {
-    const deleteInstanceRequest = new ECSClientLib.DeleteInstanceRequest({
+  async deleteInstance(ids: string[]): Promise<any> {
+    console.log("============== deleteInstances ==============");
+    const deleteInstanceRequest = new ECSClientLib.DeleteInstancesRequest({
       regionId: this.regionId,
-      instanceId: id,
+      instanceId: ids,
+      force: true,
     });
     const runtime = new Util.RuntimeOptions({
       connectTimeout: this.connectTimeout,
     });
-    const resp = await this.client.deleteInstanceWithOptions(
+    const resp = await this.client.deleteInstancesWithOptions(
       deleteInstanceRequest,
       runtime,
     );
-
+    console.log("============== deleteInstances ==============");
     return resp.body;
   }
 

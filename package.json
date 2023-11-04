@@ -6,11 +6,10 @@
     "dev": "bun run --watch src/index.ts"
   },
   "dependencies": {
-    "@alicloud/ecs-2014-05-26": "^1.0.0",
     "@alicloud/ecs20140526": "^3.0.13",
     "@alicloud/openapi-client": "^0.4.6",
-    "@alicloud/pop-core": "^1.7.13",
     "@alicloud/tea-util": "^1.4.7",
+    "cron": "^3.1.6",
     "elysia": "latest",
     "uuid": "^9.0.1"
   },

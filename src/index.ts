@@ -6,6 +6,7 @@ import { installDocker } from "@/service/install-docker";
 import { installSocks } from "@/service/install-sock5";
 import { sqliteDB } from "@/sqlite/index";
 import { aliyunECS } from "@/aliyun/index";
+import { clearInstanceJob } from "@/cron-tab/index";
 
 async function create() {
   // 先延遲避免重複執行, 等待 5 秒
@@ -64,6 +65,8 @@ const app = new Elysia()
   })
   .get("/list", () => sqliteDB.getInstances())
   .listen(3000);
+
+clearInstanceJob.start();
 
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`,
