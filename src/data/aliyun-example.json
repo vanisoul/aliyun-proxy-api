@@ -1,0 +1,6 @@
+{
+  "accessKeyId": "XXXXXXXXXXXXXXXX",
+  "accessKeySecret": "YYYYYYYYYYYYYYYYY",
+  "regionId": "cn-shanghai",
+  "endpoint": "ecs.cn-shanghai.aliyuncs.com"
+}

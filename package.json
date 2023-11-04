@@ -1,0 +1,22 @@
+{
+  "name": "app",
+  "version": "1.0.50",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "bun run --watch src/index.ts"
+  },
+  "dependencies": {
+    "@alicloud/ecs-2014-05-26": "^1.0.0",
+    "@alicloud/ecs20140526": "^3.0.13",
+    "@alicloud/openapi-client": "^0.4.6",
+    "@alicloud/pop-core": "^1.7.13",
+    "@alicloud/tea-util": "^1.4.7",
+    "elysia": "latest",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/uuid": "^9.0.6",
+    "bun-types": "latest"
+  },
+  "module": "src/index.js"
+}
