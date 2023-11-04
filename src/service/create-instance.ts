@@ -1,6 +1,7 @@
 import { aliyunECS } from "@/aliyun";
 import { sqliteDB } from "@/sqlite";
 import { installDockerStep } from "@/service/install-docker";
+import { installSocksStep } from "@/service/install-sock5";
 
 export async function createInstance() {
   const { instanceId, instanceName } = await aliyunECS.createInstance();
@@ -10,8 +11,8 @@ export async function createInstance() {
       instanceName,
       "admin",
       installDockerStep.length,
-      3,
-      3,
+      installSocksStep.length,
+      0,
     );
   }
   return instanceId;
