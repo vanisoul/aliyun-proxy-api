@@ -13,6 +13,8 @@ export interface Instance {
   id: string;
   name: string;
   owner: string;
+  ip: string;
+  start: boolean;
   docker: boolean;
   dockerStep: number;
   dockerStepTotal: number;
@@ -24,7 +26,7 @@ export interface Instance {
   ipsecVpnStepTotal: number;
 }
 
-export class Sqlite {
+class Sqlite {
   private db: Database;
   constructor() {
     const db = new Database("", { create: true });
@@ -42,15 +44,29 @@ export class Sqlite {
     ipsecVpnStepTotal: number,
   ): void {
     this.db.exec(`
-        INSERT INTO instances (id, name, owner, dockerStepTotal, socksStepTotal, ipsecVpnStepTotal) VALUES ('${id}', '${name}', '${owner}', ${dockerStepTotal}, ${socksStepTotal}, ${ipsecVpnStepTotal});
-        `);
+      INSERT INTO instances (id, name, owner, dockerStepTotal, socksStepTotal, ipsecVpnStepTotal) VALUES ('${id}', '${name}', '${owner}', ${dockerStepTotal}, ${socksStepTotal}, ${ipsecVpnStepTotal});
+      `);
   }
 
   // 刪除一個 instance, 只需要指定 id
   deleteInstance(id: string): void {
     this.db.exec(`
-            DELETE FROM instances WHERE id='${id}';
-            `);
+      DELETE FROM instances WHERE id='${id}';
+      `);
+  }
+
+  // 根據 id 啟動一個 instance, 只需要指定 id
+  startInstance(id: string): void {
+    this.db.exec(`
+      UPDATE instances SET start=true WHERE id='${id}';
+      `);
+  }
+
+  // 根據 id 設定 ip
+  setInstanceIp(id: string, ip: string): void {
+    this.db.exec(`
+      UPDATE instances SET ip='${ip}' WHERE id='${id}';
+      `);
   }
 
   // 更新一個 instance 的 dockerStep, 只需要指定 id, Step, 並且 Step == StepTotal 時, 將 docker 設為 true
@@ -87,6 +103,14 @@ export class Sqlite {
     });
   }
 
+  // 得到所有 instance
+  getInstances(): Instance[] {
+    const instance = this.db.query<Instance, []>(`
+        SELECT * FROM instances;
+        `);
+    return instance.all();
+  }
+
   // 清空 Database
   clearDatabase(): void {
     this.db.exec(`
@@ -105,6 +129,8 @@ export class Sqlite {
   // - id:唯一辨識字串, 需要加入時自己指定為字串
   // - name:instanceName
   // - owner:擁有者
+  // - ip:IP 位置
+  // - start:是否啟動, 預設 false
   // - docker:是否安裝 docker, 預設 false
   // - dockerStep:安裝 docker 的步驟, 預設 0
   // - dockerStepTotal:安裝 docker 的步驟總數, 預設 0
@@ -127,6 +153,8 @@ export class Sqlite {
             id TEXT PRIMARY KEY,
             name TEXT NOT NULL,
             owner TEXT NOT NULL,
+            ip TEXT,
+            start BOOLEAN DEFAULT FALSE,
             docker BOOLEAN DEFAULT FALSE,
             dockerStep INTEGER DEFAULT 0,
             dockerStepTotal INTEGER DEFAULT 0,
@@ -148,3 +176,5 @@ export class Sqlite {
         `);
   }
 }
+
+export const sqliteDB = new Sqlite();
