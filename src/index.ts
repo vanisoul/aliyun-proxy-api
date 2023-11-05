@@ -6,9 +6,10 @@ import { getInstanceIp } from "@/service/get-instance-ip";
 import { installDocker } from "@/service/install-docker";
 import { installSocks } from "@/service/install-sock5";
 import { clearInstance } from "@/service/clear-instance";
+import { isReady } from "@/service/instance-ready";
 import { generatePACFile } from "@/service/pac-file";
 
-import { Instance, sqliteDB } from "@/sqlite/index";
+import { sqliteDB } from "@/sqlite/index";
 import { aliyunECS } from "@/aliyun/index";
 import { clearInstanceJob } from "@/cron-tab/index";
 
@@ -146,10 +147,3 @@ clearInstanceJob.start();
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`,
 );
-
-function isReady(instance: Instance) {
-  return instance.start &&
-    instance.docker &&
-    instance.socks &&
-    instance.ipsecVpn;
-}

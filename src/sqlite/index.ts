@@ -1,4 +1,5 @@
 import { Database } from "bun:sqlite";
+import { isReady } from "@/service/instance-ready";
 
 // 建立 Step Type 使用 "docker", "socks", "ipsecVpn"
 type StepType = "docker" | "socks" | "ipsecVpn";
@@ -146,17 +147,9 @@ class Sqlite {
         SELECT * FROM instances;
         `);
     const instances = instance.all();
-    for (const instance of instances) {
-      if (
-        !instance.start ||
-        !instance.docker ||
-        !instance.socks ||
-        !instance.ipsecVpn
-      ) {
-        return true;
-      }
-    }
-    return false;
+    const readys = instances.map((instance) => isReady(instance));
+    const running = readys.some((ready) => !ready);
+    return running;
   }
 
   // 初始化資料表
