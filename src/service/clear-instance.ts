@@ -22,6 +22,16 @@ export async function clearInstance() {
   const instanceIdsByAliyunOnly = instanceIdsByAliyun.filter(
     (id) => !instanceIdsBySqlite.includes(id),
   );
+
+  // 取得所有在 sqliteDB 但是不在 aliyunECS 的實體
+  const instanceIdsBySqliteOnly = instanceIdsBySqlite.filter(
+    (id) => !instanceIdsByAliyun.includes(id),
+  );
+
+  // 刪除只存在 instanceIdsBySqliteOnly 的紀錄
+  sqliteDB.deleteInstances(instanceIdsBySqliteOnly);
+
+  // 刪除實際實體, 如果為空則不刪除
   if (instanceIdsByAliyunOnly.length === 0) {
     console.log("========= no instance to delete =========");
     return undefined;

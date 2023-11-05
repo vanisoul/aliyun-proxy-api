@@ -89,14 +89,15 @@ const app = new Elysia()
   })
   // 根據 id 刪除實例
   .get("/delete/:id", async ({ params: { id } }) => {
-    const result = await aliyunECS.deleteInstance([id]);
+    sqliteDB.deleteInstance(id);
+    const result = await clearInstance();
     return result;
   })
   .get("/delete/", async () => {
     const instances = sqliteDB.getInstances();
     const ids = instances.map((instance) => instance.id);
-    const result = await aliyunECS.deleteInstance(ids);
-    await clearInstance();
+    sqliteDB.deleteInstances(ids);
+    const result = await clearInstance();
     return result;
   })
   .get("/clear", async () => {

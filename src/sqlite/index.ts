@@ -58,6 +58,13 @@ class Sqlite {
       `);
   }
 
+  // 刪除多個 instance, 只需要指定 ids
+  deleteInstances(ids: string[]): void {
+    ids.forEach((id) => {
+      this.deleteInstance(id);
+    });
+  }
+
   // 根據 id 啟動一個 instance, 只需要指定 id
   startInstance(id: string): void {
     this.db.exec(`
