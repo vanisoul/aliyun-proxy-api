@@ -111,6 +111,15 @@ class Sqlite {
     return instance.all();
   }
 
+  // 指定 id 得到其對應的 instance
+  getInstanceById(id: string): Instance | null {
+    const instance = this.db.query<Instance, []>(`
+        SELECT * FROM instances WHERE id='${id}';
+        `);
+    const data = instance.get();
+    return data;
+  }
+
   // 清空 Database
   clearDatabase(): void {
     this.db.exec(`

@@ -1,0 +1,8 @@
+{
+  "proxyTarget": [
+    "www.bilibili.com",
+    "api.bilibili.com",
+    "*.iqiyipic.com",
+    "manga.bilibili.com"
+  ]
+}

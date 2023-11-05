@@ -154,20 +154,28 @@ class Client {
   // 根據ID刪除ECS實例
   async deleteInstance(ids: string[]): Promise<any> {
     console.log("============== deleteInstances ==============");
-    const deleteInstanceRequest = new ECSClientLib.DeleteInstancesRequest({
-      regionId: this.regionId,
-      instanceId: ids,
-      force: true,
-    });
-    const runtime = new Util.RuntimeOptions({
-      connectTimeout: this.connectTimeout,
-    });
-    const resp = await this.client.deleteInstancesWithOptions(
-      deleteInstanceRequest,
-      runtime,
-    );
-    console.log("============== deleteInstances ==============");
-    return resp.body;
+    if (ids.length === 0) {
+      return { msg: "instanceIds is empty" };
+    }
+    try {
+      const deleteInstanceRequest = new ECSClientLib.DeleteInstancesRequest({
+        regionId: this.regionId,
+        instanceId: ids,
+        force: true,
+      });
+      const runtime = new Util.RuntimeOptions({
+        connectTimeout: this.connectTimeout,
+      });
+      const resp = await this.client.deleteInstancesWithOptions(
+        deleteInstanceRequest,
+        runtime,
+      );
+      console.log("============== deleteInstances ==============");
+      return resp.body;
+    } catch (error: unknown) {
+      console.log("============== deleteInstances ==============");
+      return (error as { code: string }).code;
+    }
   }
 
   // 根據ID啟動ECS實例
