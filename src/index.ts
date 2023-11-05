@@ -15,17 +15,10 @@ import { clearInstanceJob } from "@/cron-tab/index";
 
 import { proxyTarget } from "@/data/proxy.json";
 
+// 建立中變數, 用於避免重複執行
+let creating = false;
+
 async function create() {
-  // 先延遲避免重複執行, 等待 5 秒
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-
-  // 如果有正在執行的實例, 則不執行
-  const running = sqliteDB.getRunningInstance();
-  if (running) {
-    console.log("running", { running });
-    return;
-  }
-
   console.log("create");
   // 建立實例
   const id = await createInstance();
@@ -73,12 +66,24 @@ const app = new Elysia()
   )
   // 建立實例
   .get("/create", async () => {
+    // 如果有正在建立中的實例, 則不執行
+    if (creating) {
+      console.log("creating");
+      return "creating";
+    }
+    creating = true;
+
+    // 等待 15 秒, 解放避免連點手誤
+    setTimeout(() => {
+      creating = false;
+    }, 15000);
+
     // 建立實例
     void create();
     void clearInstance();
 
-    // 回傳已收到建立指令, 並告知管理介面沒增加主機, 可能是因為正在建立中, 確認是否有正在建立中的實例
-    return "create, but not add to list, please check running instance";
+    // 回傳已收到建立指令, 並在背景執行, 如果需要知道狀態, 請使用 /ids & /status/:id
+    return "start create, please check /ids & /status/:id";
   })
   // 取得所有 id
   .get("/ids", async () => {
