@@ -5,7 +5,7 @@ services:
     image: china-vpn:0.0.2
     container_name: china-vpn
     ports:
-      - 2376:2376
+      - 2376:3000
     volumes:
       - "./src/data/aliyun.json:/app/data/aliyun.json"
     restart: unless-stopped
