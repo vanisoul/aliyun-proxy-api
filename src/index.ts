@@ -16,7 +16,7 @@ import { proxyTarget } from "@/data/proxy.json";
 
 async function create() {
   // 先延遲避免重複執行, 等待 5 秒
-  await new Promise((resolve) => setTimeout(resolve, 5000));
+  await new Promise((resolve) => setTimeout(resolve, 3000));
 
   // 如果有正在執行的實例, 則不執行
   const running = sqliteDB.getRunningInstance();
@@ -62,11 +62,19 @@ async function create() {
 }
 
 const app = new Elysia()
-  .use(swagger({ path: "/swagger" }))
+  .use(
+    swagger({
+      path: "/swagger",
+      documentation: {
+        info: { version: process.env.VERSION ?? "0.0.0", title: "china-vpn" },
+      },
+    }),
+  )
   // 建立實例
   .get("/create", async () => {
     // 建立實例
     void create();
+    void clearInstance();
 
     // 回傳已收到建立指令, 並告知管理介面沒增加主機, 可能是因為正在建立中, 確認是否有正在建立中的實例
     return "create, but not add to list, please check running instance";
@@ -91,11 +99,10 @@ const app = new Elysia()
     await clearInstance();
     return result;
   })
-  // await clearInstance();
   .get("/clear", async () => {
     const result = await clearInstance();
     if (result === undefined) {
-      return "no instance to delete";
+      return "no instance need delete";
     } else {
       return "instance deleted: " + result.join(", ");
     }
@@ -140,8 +147,8 @@ console.log(
 );
 
 function isReady(instance: Instance) {
-  return instance.start ||
-    instance.docker ||
-    instance.socks ||
+  return instance.start &&
+    instance.docker &&
+    instance.socks &&
     instance.ipsecVpn;
 }

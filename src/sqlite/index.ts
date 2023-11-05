@@ -46,6 +46,9 @@ class Sqlite {
     this.db.exec(`
       INSERT INTO instances (id, name, owner, dockerStepTotal, socksStepTotal, ipsecVpnStepTotal) VALUES ('${id}', '${name}', '${owner}', ${dockerStepTotal}, ${socksStepTotal}, ${ipsecVpnStepTotal});
       `);
+
+    // TODO: VPN 尚未實作, 建立時直接標記完成
+    this.updateInstanceIpsecVpnStep(id, 0);
   }
 
   // 刪除一個 instance, 只需要指定 id
