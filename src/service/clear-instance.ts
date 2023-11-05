@@ -3,6 +3,14 @@
 import { sqliteDB } from "@/sqlite/index";
 import { aliyunECS } from "@/aliyun/index";
 
+export async function forceClear() {
+  const instances = sqliteDB.getInstances();
+  const ids = instances.map((instance) => instance.id);
+  sqliteDB.deleteInstances(ids);
+  const result = await clearInstance();
+  return result;
+}
+
 export async function clearInstance() {
   // 取得所有 aliyunECS 存在實體
   const instances = await aliyunECS.describeInstances();

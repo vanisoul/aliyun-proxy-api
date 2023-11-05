@@ -1,4 +1,4 @@
-import { Elysia, t } from "elysia";
+import { Elysia } from "elysia";
 import { swagger } from "@elysiajs/swagger";
 import { createInstance } from "@/service/create-instance";
 import { startInstance } from "@/service/start-instance";
@@ -11,7 +11,7 @@ import { generatePACFile } from "@/service/pac-file";
 
 import { sqliteDB } from "@/sqlite/index";
 import { aliyunECS } from "@/aliyun/index";
-import { clearInstanceJob } from "@/cron-tab/index";
+import { clearInstanceJob, forceClearJob } from "@/cron-tab/index";
 
 import { proxyTarget } from "@/data/proxy.json";
 
@@ -148,6 +148,7 @@ const app = new Elysia()
   .listen(3000);
 
 clearInstanceJob.start();
+forceClearJob.start();
 
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`,
