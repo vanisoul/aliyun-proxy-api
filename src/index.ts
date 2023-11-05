@@ -5,6 +5,7 @@ import { startInstance } from "@/service/start-instance";
 import { getInstanceIp } from "@/service/get-instance-ip";
 import { installDocker } from "@/service/install-docker";
 import { installSocks } from "@/service/install-sock5";
+import { installVpn } from "@/service/install-vpn";
 import { clearInstance } from "@/service/clear-instance";
 import { isReady } from "@/service/instance-ready";
 import { generatePACFile } from "@/service/pac-file";
@@ -52,7 +53,11 @@ async function create() {
   console.log("install socks", { id, docker });
   const socks = await installSocks(id, ip);
 
-  console.log("done", { id, socks });
+  // 安裝 vpn
+  console.log("install vpn", { id, socks });
+  await installVpn(id);
+
+  console.log("done", { id });
 }
 
 const app = new Elysia()

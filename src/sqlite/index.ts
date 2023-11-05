@@ -25,6 +25,9 @@ export interface Instance {
   ipsecVpn: boolean;
   ipsecVpnStep: number;
   ipsecVpnStepTotal: number;
+  ipsecPsk: string;
+  ipsecUser: string;
+  ipsecPwd: string;
 }
 
 class Sqlite {
@@ -47,9 +50,6 @@ class Sqlite {
     this.db.exec(`
       INSERT INTO instances (id, name, owner, dockerStepTotal, socksStepTotal, ipsecVpnStepTotal) VALUES ('${id}', '${name}', '${owner}', ${dockerStepTotal}, ${socksStepTotal}, ${ipsecVpnStepTotal});
       `);
-
-    // TODO: VPN 尚未實作, 建立時直接標記完成
-    this.updateInstanceIpsecVpnStep(id, 0);
   }
 
   // 刪除一個 instance, 只需要指定 id
@@ -152,6 +152,18 @@ class Sqlite {
     return running;
   }
 
+  // 設定 ipsecPsk, ipsecUser, ipsecPwd
+  setInstanceIpsec(
+    id: string,
+    ipsecPsk: string,
+    ipsecUser: string,
+    ipsecPwd: string,
+  ): void {
+    this.db.exec(`
+        UPDATE instances SET ipsecPsk='${ipsecPsk}', ipsecUser='${ipsecUser}', ipsecPwd='${ipsecPwd}' WHERE id='${id}';
+        `);
+  }
+
   // 初始化資料表
   // 表1: users
   // - id:唯一編號
@@ -171,6 +183,9 @@ class Sqlite {
   // - ipsec-vpn:是否啟動 hwdsl2/ipsec-vpn-server, 預設 false
   // - ipsec-vpn:啟動 ipsec-vpn 步驟, 預設 0
   // - ipsec-vpn:啟動 ipsec-vpn 步驟總數, 預設 0
+  // ipsecPsk: 預設為空
+  // ipsecUser: 預設為空
+  // ipsecPwd: 預設為空
   // 開始 init database
   private initDatabase(): void {
     this.db.exec(`
@@ -194,7 +209,10 @@ class Sqlite {
             socksStepTotal INTEGER DEFAULT 0,
             ipsecVpn BOOLEAN DEFAULT FALSE,
             ipsecVpnStep INTEGER DEFAULT 0,
-            ipsecVpnStepTotal INTEGER DEFAULT 0
+            ipsecVpnStepTotal INTEGER DEFAULT 0,
+            ipsecPsk TEXT DEFAULT '',
+            ipsecUser TEXT DEFAULT '',
+            ipsecPwd TEXT DEFAULT ''
         );
         `);
     this.initUsers();

@@ -2,18 +2,10 @@ version: '2'
 
 services:
   china-vpn:
-    image: china-vpn:0.0.1
+    image: china-vpn:0.0.2
     container_name: china-vpn
-    volumes:
-      - "./src/data/aliyun.json:/app/data/aliyun.json"
-    restart: unless-stopped
-  lb:
-    image: haproxy:2.6.2-alpine
-    restart: unless-stopped
     ports:
       - 2376:2376
     volumes:
-      - "./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg"
-      - "./haproxy/tls/proxy.pem:/etc/ssl/certs/china.pem"
-    environment:      
-      - TZ=Asia/Taipei
+      - "./src/data/aliyun.json:/app/data/aliyun.json"
+    restart: unless-stopped
