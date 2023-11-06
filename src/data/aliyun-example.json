@@ -2,5 +2,6 @@
   "accessKeyId": "XXXXXXXXXXXXXXXX",
   "accessKeySecret": "YYYYYYYYYYYYYYYYY",
   "regionId": "cn-shanghai",
-  "endpoint": "ecs.cn-shanghai.aliyuncs.com"
+  "endpoint": "ecs.cn-shanghai.aliyuncs.com",
+  "connectTimeout": 100000
 }

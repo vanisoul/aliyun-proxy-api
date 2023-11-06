@@ -8,7 +8,7 @@ import aliyrnJson from "@/data/aliyun.json";
 class Client {
   private client: ECSClient;
   private regionId: string;
-  private connectTimeout = 20000;
+  private connectTimeout = aliyrnJson.connectTimeout;
 
   constructor(
     accessKeyId: string,
