@@ -2,7 +2,7 @@ version: '2'
 
 services:
   china-vpn:
-    image: china-vpn:0.0.2
+    image: china-vpn:0.0.3
     container_name: china-vpn
     ports:
       - 2376:3000
