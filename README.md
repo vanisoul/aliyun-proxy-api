@@ -18,6 +18,13 @@ bun run dev
 
 Open http://localhost:3000/ with your browser to see the result.
 
-## 設定檔案
-
+## 設定環境檔案
+- 方法1
 cp `./data/aliyun-example.json` `./data/aliyun.json` 自行修改其參數
+
+- 方法2
+  - ACCESS_KEY_ID
+  - ACCESS_KEY_SECRET
+  - ENDPOINT
+  - REGION_ID
+  - CONNECT_TIMEOUT

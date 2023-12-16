@@ -8,7 +8,7 @@ import aliyrnJson from "@/data/aliyun.json";
 class Client {
   private client: ECSClient;
   private regionId: string;
-  private connectTimeout = aliyrnJson.connectTimeout;
+  private connectTimeout = Bun.env.CONNECT_TIMEOUT || aliyrnJson.connectTimeout;
 
   constructor(
     accessKeyId: string,
@@ -303,8 +303,8 @@ class Client {
 }
 
 export const aliyunECS = new Client(
-  aliyrnJson.accessKeyId,
-  aliyrnJson.accessKeySecret,
-  aliyrnJson.endpoint,
-  aliyrnJson.regionId,
+  Bun.env.ACCESS_KEY_ID || aliyrnJson.accessKeyId,
+  Bun.env.ACCESS_KEY_SECRET || aliyrnJson.accessKeySecret,
+  Bun.env.ENDPOINT || aliyrnJson.endpoint,
+  Bun.env.REGION_ID || aliyrnJson.regionId,
 );
