@@ -14,7 +14,9 @@ import { sqliteDB } from "@/sqlite/index";
 import { aliyunECS } from "@/aliyun/index";
 import { clearInstanceJob, forceClearJob } from "@/cron-tab/index";
 
-import { proxyTarget } from "@/data/proxy.json";
+import { proxyTarget as proxyTargetByJson } from "@/data/proxy.json";
+
+const proxyTarget = Bun.env.PROXY_TARGETS?.split(",").map(target => target.trim()) || proxyTargetByJson;
 
 // 建立中變數, 用於避免重複執行
 let creating = false;

@@ -28,3 +28,4 @@ cp `./data/aliyun-example.json` `./data/aliyun.json` 自行修改其參數
   - ENDPOINT
   - REGION_ID
   - CONNECT_TIMEOUT
+  - PROXY_TARGETS (,分隔)
