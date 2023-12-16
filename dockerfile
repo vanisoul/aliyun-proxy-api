@@ -30,5 +30,8 @@ WORKDIR /app
 # 將專案代碼複製到容器中
 COPY . .
 
+# 複製基礎設定檔 避免無此檔案影響影像啟動
+RUN mv /app/src/data/aliyun-example.json /app/src/data/aliyun.json
+
 # 在容器啟動時運行 `bun dev` 命令
 CMD ["bun", "dev"]
