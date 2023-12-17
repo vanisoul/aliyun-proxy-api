@@ -15,8 +15,17 @@ import { aliyunECS } from "@/aliyun/index";
 import { clearInstanceJob, forceClearJob } from "@/cron-tab/index";
 
 import { proxyTarget as proxyTargetByJson } from "@/data/proxy.json";
+import { xApiKey } from "@/data/api-key.json";
 
-const proxyTarget = Bun.env.PROXY_TARGETS?.split(",").map(target => target.trim()) || proxyTargetByJson;
+function getPrxoyTarget() {
+  const proxyTarget = Bun.env.PROXY_TARGETS?.split(",").map(target => target.trim()) || proxyTargetByJson;
+  return proxyTarget;
+}
+
+function getXApiKey() {
+  const apiKey = Bun.env.X_API_KEY || xApiKey;
+  return apiKey
+}
 
 // 建立中變數, 用於避免重複執行
 let creating = false;
@@ -62,13 +71,26 @@ async function create() {
   console.log("done", { id });
 }
 
+
 const app = new Elysia()
+  .onBeforeHandle(({query,path})=>{
+    // 排除檢查列表
+    const excludeList = ["/swagger/json"];
+    if(excludeList.includes(path)){
+      return;
+    }
+
+    const apiKey = getXApiKey();
+    if (apiKey && apiKey !== query.xApiKey) {
+      return {status: 401, body: 'Unauthorized'}
+    }
+  })
   .use(
     swagger({
       path: "/swagger",
       documentation: {
         info: { version: process.env.VERSION ?? "0.0.0", title: "china-vpn" },
-      },
+      }
     }),
   )
   // 建立實例
@@ -137,7 +159,7 @@ const app = new Elysia()
     if (instance === null || !isReady(instance)) {
       return "id not found or instance not ready";
     }
-    const pacFile = generatePACFile(proxyTarget, instance.ip);
+    const pacFile = generatePACFile(getPrxoyTarget(), instance.ip);
     return pacFile;
   })
   .get("/pacfile", async () => {
@@ -149,7 +171,7 @@ const app = new Elysia()
     }
 
     const instance = instances[Math.floor(Math.random() * instances.length)];
-    const pacFile = generatePACFile(proxyTarget, instance.ip);
+    const pacFile = generatePACFile(getPrxoyTarget(), instance.ip);
     return pacFile;
   })
   .listen(3000);

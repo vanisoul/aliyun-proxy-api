@@ -28,4 +28,5 @@ cp `./data/aliyun-example.json` `./data/aliyun.json` 自行修改其參數
   - ENDPOINT
   - REGION_ID
   - CONNECT_TIMEOUT
-  - PROXY_TARGETS (,分隔)
+  - PROXY_TARGETS (pacfile 會轉換的規則 使用 `,` 分隔)
+  - X_API_KEY (queryString 給予 xApiKey=??? 才可以通過授權)
