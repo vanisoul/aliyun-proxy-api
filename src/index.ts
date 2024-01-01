@@ -73,23 +73,23 @@ async function create() {
 
 
 const app = new Elysia()
-  .onBeforeHandle(({query,path})=>{
+  .onBeforeHandle(({ query, path }) => {
     // 排除檢查列表
     const excludeList = ["/swagger/json"];
-    if(excludeList.includes(path)){
+    if (excludeList.includes(path)) {
       return;
     }
 
     const apiKey = getXApiKey();
     if (apiKey && apiKey !== query.xApiKey) {
-      return {status: 401, body: 'Unauthorized'}
+      return { status: 401, body: 'Unauthorized' }
     }
   })
   .use(
     swagger({
       path: "/swagger",
       documentation: {
-        info: { version: process.env.VERSION ?? "0.0.0", title: "china-vpn" },
+        info: { version: process.env.VERSION ?? "0.0.0", title: "aliyun-proxy-api" },
       }
     }),
   )

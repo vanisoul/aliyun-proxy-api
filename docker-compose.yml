@@ -1,9 +1,9 @@
 version: '2'
 
 services:
-  china-vpn:
-    image: china-vpn:0.0.3
-    container_name: china-vpn
+  aliyun-proxy-api:
+    image: aliyun-proxy-api:0.0.3
+    container_name: aliyun-proxy-api
     ports:
       - 2376:3000
     volumes:

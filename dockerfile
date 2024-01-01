@@ -1,8 +1,8 @@
 # docker build .  設定 VERSION 範例
-# docker build . --build-arg VERSION=0.0.1 -t china-vpn:0.0.1
+# docker build . --build-arg VERSION=0.0.1 -t aliyun-proxy-api:0.0.1
 
 # docker run 範例
-# docker run --rm -d -p 2376:3000 -v ${PWD}/aliyun.json:/app/data/aliyun.json --name china-vpn china-vpn:0.0.1
+# docker run --rm -d -p 2376:3000 -v ${PWD}/aliyun.json:/app/data/aliyun.json --name aliyun-proxy-api aliyun-proxy-api:0.0.1
 
 # 使用 ARG 將 Project VERSION 設置為預設值
 ARG VERSION=0.0.0
