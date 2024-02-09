@@ -37,4 +37,4 @@ RUN mv /app/src/data/aliyun-example.json /app/src/data/aliyun.json
 RUN bun install --production --frozen-lockfile
 
 # 在容器啟動時運行 `bun run` 命令
-CMD ["bun", "run"]
+CMD ["bun", "run", "run"]
