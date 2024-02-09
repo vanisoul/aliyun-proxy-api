@@ -2,7 +2,8 @@
   "name": "aliyun-proxy-api",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "bun run --watch src/index.ts"
+    "dev": "bun run --watch src/index.ts",
+    "run": "bun run src/index.ts"
   },
   "dependencies": {
     "@alicloud/ecs20140526": "^3.0.13",

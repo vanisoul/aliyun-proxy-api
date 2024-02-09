@@ -33,5 +33,8 @@ COPY . .
 # 複製基礎設定檔 避免無此檔案影響影像啟動
 RUN mv /app/src/data/aliyun-example.json /app/src/data/aliyun.json
 
-# 在容器啟動時運行 `bun dev` 命令
-CMD ["bun", "dev"]
+# 安裝專案相依套件
+RUN bun install --production --frozen-lockfile
+
+# 在容器啟動時運行 `bun run` 命令
+CMD ["bun", "run"]
