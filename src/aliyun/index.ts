@@ -135,7 +135,7 @@ class Client {
       period: 1,
       periodUnit: "Hourly",
       securityEnhancementStrategy: "Active",
-      vSwitchId: "vsw-uf6bh9eji5ik2v22irrcr",
+      vSwitchId: vSwitchId,
       dryRun: false,
     });
     const runtime = new Util.RuntimeOptions({
@@ -308,3 +308,5 @@ export const aliyunECS = new Client(
   Bun.env.ENDPOINT || aliyrnJson.endpoint,
   Bun.env.REGION_ID || aliyrnJson.regionId,
 );
+
+const vSwitchId = Bun.env.V_SWITCH_ID || "vsw-2zehmapcr6dqr0t1buk3h";
