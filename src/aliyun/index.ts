@@ -2,13 +2,14 @@ import * as OpenApiLib from "@alicloud/openapi-client";
 import ECSClient, * as ECSClientLib from "@alicloud/ecs20140526";
 import * as Util from "@alicloud/tea-util";
 import { v4 as uuidv4 } from "uuid";
-import aliyrnJson from "@/data/aliyun.json";
+
+import { getConnectTimeout, accessKeyId, accessKeySecret, endpoint, regionId, vSwitchId } from "@/env/env-manager";
 
 // 建立一個阿里雲客戶端對象
 class Client {
   private client: ECSClient;
   private regionId: string;
-  private connectTimeout = Bun.env.CONNECT_TIMEOUT || aliyrnJson.connectTimeout;
+  private connectTimeout = getConnectTimeout();
 
   constructor(
     accessKeyId: string,
@@ -74,9 +75,9 @@ class Client {
     console.log("============== describeInstanceStatus ==============");
     const describeInstancesRequest = new ECSClientLib
       .DescribeInstanceStatusRequest({
-      regionId: this.regionId,
-      instanceId: [id],
-    });
+        regionId: this.regionId,
+        instanceId: [id],
+      });
     const runtime = new Util.RuntimeOptions({
       connectTimeout: this.connectTimeout,
     });
@@ -202,9 +203,9 @@ class Client {
   async getInstanceIp(id: string): Promise<string | undefined> {
     const describeInstancesRequest = new ECSClientLib
       .AllocatePublicIpAddressRequest({
-      regionId: this.regionId,
-      instanceId: id,
-    });
+        regionId: this.regionId,
+        instanceId: id,
+      });
     const runtime = new Util.RuntimeOptions({
       connectTimeout: this.connectTimeout,
     });
@@ -302,11 +303,4 @@ class Client {
   }
 }
 
-export const aliyunECS = new Client(
-  Bun.env.ACCESS_KEY_ID || aliyrnJson.accessKeyId,
-  Bun.env.ACCESS_KEY_SECRET || aliyrnJson.accessKeySecret,
-  Bun.env.ENDPOINT || aliyrnJson.endpoint,
-  Bun.env.REGION_ID || aliyrnJson.regionId,
-);
-
-const vSwitchId = Bun.env.V_SWITCH_ID || "vsw-2zehmapcr6dqr0t1buk3h";
+export const aliyunECS = new Client(accessKeyId, accessKeySecret, endpoint, regionId);

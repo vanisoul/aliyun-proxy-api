@@ -33,6 +33,8 @@ COPY . .
 # 複製基礎設定檔 避免無此檔案影響影像啟動
 RUN mv /app/src/data/aliyun-example.json /app/src/data/aliyun.json
 
+RUN mkdir -p /tmp/aliyundb/
+
 # 安裝專案相依套件
 RUN bun install --production --frozen-lockfile
 

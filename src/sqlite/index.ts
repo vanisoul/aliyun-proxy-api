@@ -33,7 +33,7 @@ export interface Instance {
 class Sqlite {
   private db: Database;
   constructor() {
-    const db = new Database("", { create: true });
+    const db = new Database("/tmp/aliyundb/db.sqlite", { create: true });
     this.db = db;
     this.initDatabase();
   }
@@ -220,9 +220,46 @@ class Sqlite {
 
   // 開始 init users
   private initUsers(): void {
+    const userAdmin = this.db.query(
+      `SELECT * FROM users WHERE name = 'admin'`
+    );
+    const userAdminResult = userAdmin.all();
+    if (userAdminResult.length > 0) {
+      return;
+    }
+
     this.db.exec(`
-        INSERT INTO users (name) VALUES ('admin');
-        `);
+    INSERT INTO users (name) VALUES ('admin');
+    `);
+  }
+
+  // 建立假實體資料
+  private createMaskInstance(): void {
+    const id = "i-xxxxx";
+
+    const dockerStep = 9;
+    const socksStep = 2;
+    const ipsecVpnStep = 7;
+
+    const psk = "xxxxx";
+    const user = "xxxxx";
+    const password = "xxxxx";
+
+    this.createInstance(
+      id,
+      "xxxxx",
+      "admin",
+      dockerStep,
+      socksStep,
+      ipsecVpnStep,
+    );
+    const ip = "127.0.0.1";
+    this.setInstanceIp(id, ip);
+    this.startInstance(id);
+    this.updateInstanceDockerStep(id, dockerStep);
+    this.updateInstanceSocksStep(id, socksStep);
+    this.updateInstanceIpsecVpnStep(id, ipsecVpnStep);
+    this.setInstanceIpsec(id, psk, user, password);
   }
 }
 

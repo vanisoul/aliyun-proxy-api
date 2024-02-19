@@ -12,20 +12,9 @@ import { generatePACFile } from "@/service/pac-file";
 
 import { sqliteDB } from "@/sqlite/index";
 import { aliyunECS } from "@/aliyun/index";
-import { clearInstanceJob, forceClearJob } from "@/cron-tab/index";
+import { clearInstanceJob } from "@/cron-tab/index";
 
-import { proxyTarget as proxyTargetByJson } from "@/data/proxy.json";
-import { xApiKey } from "@/data/api-key.json";
-
-function getPrxoyTarget() {
-  const proxyTarget = Bun.env.PROXY_TARGETS?.split(",").map(target => target.trim()) || proxyTargetByJson;
-  return proxyTarget;
-}
-
-function getXApiKey() {
-  const apiKey = Bun.env.X_API_KEY || xApiKey;
-  return apiKey
-}
+import { getPrxoyTarget, getXApiKey, getVersion } from "@/env/env-manager";
 
 // 建立中變數, 用於避免重複執行
 let creating = false;
@@ -89,7 +78,7 @@ const app = new Elysia()
     swagger({
       path: "/swagger",
       documentation: {
-        info: { version: process.env.VERSION ?? "0.0.0", title: "aliyun-proxy-api" },
+        info: { version: getVersion(), title: "aliyun-proxy-api" },
       }
     }),
   )
@@ -177,7 +166,7 @@ const app = new Elysia()
   .listen(3000);
 
 clearInstanceJob.start();
-forceClearJob.start();
+// forceClearJob.start();
 
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`,
