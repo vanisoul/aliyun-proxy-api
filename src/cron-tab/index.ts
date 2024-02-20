@@ -8,7 +8,6 @@ export const clearInstanceJob = CronJob.from({
     console.log("clearInstanceJob");
     clearInstance();
   },
-  start: true,
   timeZone: "Asia/Taipei",
 });
 
@@ -18,6 +17,5 @@ export const forceClearJob = CronJob.from({
     console.log("forceClearJob");
     forceClear();
   },
-  start: true,
   timeZone: "Asia/Taipei",
 });
