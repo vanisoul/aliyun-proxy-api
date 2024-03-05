@@ -1,4 +1,5 @@
 import { Elysia } from "elysia";
+import { ip } from "elysia-ip";
 import { swagger } from "@elysiajs/swagger";
 import { createInstance } from "@/service/create-instance";
 import { startInstance } from "@/service/start-instance";
@@ -162,6 +163,11 @@ const app = new Elysia()
     const instance = instances[Math.floor(Math.random() * instances.length)];
     const pacFile = generatePACFile(getPrxoyTarget(), instance.ip);
     return pacFile;
+  })
+  // 設定 安全組 authorizeSecurityGroup
+  .use(ip()).get("/setSecurity", async ({ ip }) => {
+    const result = await aliyunECS.authorizeSecurityGroup(true, true, true, ip?.toString() ?? "127.0.0.1");
+    return result;
   })
   .listen(3000);
 

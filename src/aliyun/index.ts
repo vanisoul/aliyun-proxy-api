@@ -3,7 +3,7 @@ import ECSClient, * as ECSClientLib from "@alicloud/ecs20140526";
 import * as Util from "@alicloud/tea-util";
 import { v4 as uuidv4 } from "uuid";
 
-import { getConnectTimeout, accessKeyId, accessKeySecret, endpoint, regionId, vSwitchId } from "@/env/env-manager";
+import { getConnectTimeout, accessKeyId, accessKeySecret, endpoint, regionId, vSwitchId, securityGroupId } from "@/env/env-manager";
 
 // 建立一個阿里雲客戶端對象
 class Client {
@@ -120,25 +120,30 @@ class Client {
     const instanceUUIDv4 = uuidv4();
     const instanceName = `Z-${instanceUUIDv4}`;
 
-    const systemDisk = new ECSClientLib.CreateInstanceRequestSystemDisk({
+    const reqDisk = new ECSClientLib.CreateInstanceRequestDataDisk({
       size: 20,
       category: "cloud_efficiency",
     });
-    const createInstanceRequest = new ECSClientLib.CreateInstanceRequest({
+
+    const reqInstance = new ECSClientLib.CreateInstanceRequest({
       regionId: this.regionId,
       imageId: "ubuntu_22_04_x64_20G_alibase_20230907.vhd",
       instanceName,
       instanceType: "ecs.t6-c2m1.large",
       internetChargeType: "PayByTraffic",
       internetMaxBandwidthOut: 50,
-      systemDisk: systemDisk,
+      systemDisk: reqDisk,
       instanceChargeType: "PostPaid",
       period: 1,
       periodUnit: "Hourly",
       securityEnhancementStrategy: "Active",
       vSwitchId: vSwitchId,
       dryRun: false,
+      securityGroupId
     });
+
+    const createInstanceRequest = new ECSClientLib.CreateInstanceRequest(reqInstance);
+
     const runtime = new Util.RuntimeOptions({
       connectTimeout: this.connectTimeout,
     });
@@ -150,6 +155,64 @@ class Client {
     console.log(resp.body);
     console.log("============== createInstance ==============");
     return { instanceName, instanceId: resp.body.instanceId };
+  }
+
+  // 設定安全組規則 都為最優先 1, 第一個參數為 TCP 開/關, 第二個參數為 UDP 開/關, 第三個參數為 icmp 開/關, 第四個參數為 目標 IP
+  async authorizeSecurityGroup(openTcp: boolean, openUdp: boolean, openIcmp: boolean, ip: string) {
+    console.log("============== authorizeSecurityGroup ==============");
+
+    if (openTcp) {
+      const authorizeSecurityGroupRequest = new ECSClientLib.AuthorizeSecurityGroupRequest({
+        regionId: this.regionId,
+        ipProtocol: "TCP",
+        portRange: "1/65535",
+        sourceCidrIp: ip,
+        securityGroupId: securityGroupId,
+      });
+      const runtime = new Util.RuntimeOptions({
+        connectTimeout: this.connectTimeout,
+      });
+      await this.client.authorizeSecurityGroupWithOptions(
+        authorizeSecurityGroupRequest,
+        runtime,
+      );
+    }
+
+    if (openUdp) {
+      const authorizeSecurityGroupRequest = new ECSClientLib.AuthorizeSecurityGroupRequest({
+        regionId: this.regionId,
+        ipProtocol: "UDP",
+        portRange: "1/65535",
+        sourceCidrIp: ip,
+        securityGroupId: securityGroupId,
+      });
+      const runtime = new Util.RuntimeOptions({
+        connectTimeout: this.connectTimeout,
+      });
+      await this.client.authorizeSecurityGroupWithOptions(
+        authorizeSecurityGroupRequest,
+        runtime,
+      );
+    }
+
+    if (openIcmp) {
+      const authorizeSecurityGroupRequest = new ECSClientLib.AuthorizeSecurityGroupRequest({
+        regionId: this.regionId,
+        ipProtocol: "ICMP",
+        portRange: "-1/-1",
+        sourceCidrIp: ip,
+        securityGroupId: securityGroupId,
+      });
+      const runtime = new Util.RuntimeOptions({
+        connectTimeout: this.connectTimeout,
+      });
+      await this.client.authorizeSecurityGroupWithOptions(
+        authorizeSecurityGroupRequest,
+        runtime,
+      );
+    }
+
+    console.log("============== authorizeSecurityGroup ==============");
   }
 
   // 根據ID刪除ECS實例
