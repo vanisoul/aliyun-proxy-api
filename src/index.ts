@@ -175,6 +175,8 @@ const app = new Elysia()
       return "not a valid ipv4";
     }
 
+    await aliyunECS.revokeSecurityGroup();
+
     const result = await aliyunECS.authorizeSecurityGroup(true, true, true, ipv4Ip ?? "127.0.0.1");
     return result;
   })

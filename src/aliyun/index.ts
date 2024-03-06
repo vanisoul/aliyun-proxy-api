@@ -157,10 +157,46 @@ class Client {
     return { instanceName, instanceId: resp.body.instanceId };
   }
 
+  // 清空原安全組規則
+  async revokeSecurityGroup() {
+    console.log("============== revokeSecurityGroup ==============");
+    const describeSecurityGroupAttributeRequest = new ECSClientLib.DescribeSecurityGroupAttributeRequest({
+      securityGroupId: securityGroupId,
+      regionId: this.regionId,
+    })
+    const runtime = new Util.RuntimeOptions({
+      connectTimeout: this.connectTimeout,
+    });
+    const describeSecurityGroupAttributeRespond = await this.client.describeSecurityGroupAttributeWithOptions(
+      describeSecurityGroupAttributeRequest,
+      runtime,
+    );
+
+    const securityGroupAttribute = describeSecurityGroupAttributeRespond.body.permissions?.permission;
+    if (securityGroupAttribute) {
+      for (const rule of securityGroupAttribute) {
+        const revokeSecurityGroupRequest = new ECSClientLib.RevokeSecurityGroupRequest({
+          regionId: this.regionId,
+          ipProtocol: rule.ipProtocol,
+          portRange: rule.portRange,
+          sourceCidrIp: rule.sourceCidrIp,
+          securityGroupId: securityGroupId,
+        });
+        const runtime = new Util.RuntimeOptions({
+          connectTimeout: this.connectTimeout,
+        });
+        await this.client.revokeSecurityGroupWithOptions(
+          revokeSecurityGroupRequest,
+          runtime,
+        );
+      }
+    }
+    console.log("============== revokeSecurityGroup ==============");
+  }
+
   // 設定安全組規則 都為最優先 1, 第一個參數為 TCP 開/關, 第二個參數為 UDP 開/關, 第三個參數為 icmp 開/關, 第四個參數為 目標 IP
   async authorizeSecurityGroup(openTcp: boolean, openUdp: boolean, openIcmp: boolean, ip: string) {
     console.log("============== authorizeSecurityGroup ==============");
-
     if (openTcp) {
       const authorizeSecurityGroupRequest = new ECSClientLib.AuthorizeSecurityGroupRequest({
         regionId: this.regionId,
