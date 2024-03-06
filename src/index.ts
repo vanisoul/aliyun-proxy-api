@@ -188,6 +188,12 @@ const app = new Elysia()
     const result = await aliyunECS.authorizeSecurityGroup(true, true, true, ipv4Ip ?? "127.0.0.1");
     return result;
   })
+  // 設定 安全組 authorizeSecurityGroup 但是 IP 直接指定 由下一個 Path
+  .get("/setSecurity/:ip", async ({ params: { ip } }) => {
+    await aliyunECS.revokeSecurityGroup();
+    const result = await aliyunECS.authorizeSecurityGroup(true, true, true, ip);
+    return result;
+  })
   .listen(3000);
 
 clearInstanceJob.start();
