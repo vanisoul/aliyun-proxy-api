@@ -17,7 +17,7 @@ import { sqliteDB } from "@/sqlite/index";
 import { aliyunECS } from "@/aliyun/index";
 import { clearInstanceJob } from "@/cron-tab/index";
 
-import { getPrxoyTarget, getXApiKey, getVersion } from "@/env/env-manager";
+import { getPrxoyTarget, getXApiKey, getVersion, checkHeaders, isProd } from "@/env/env-manager";
 
 // 建立中變數, 用於避免重複執行
 let creating = false;
@@ -167,7 +167,15 @@ const app = new Elysia()
     return pacFile;
   })
   // 設定 安全組 authorizeSecurityGroup
-  .use(ip()).get("/setSecurity", async ({ ip }) => {
+  .use(ip({
+    checkHeaders: checkHeaders.split(";")
+  })).get("/setSecurity", async ({ ip, request }) => {
+
+    if (!isProd) {
+      console.log("ip", ip);
+      console.log("headers", JSON.stringify(request.headers, null, 2));
+    }
+
     const ipAddr = (ip as any).address;
     const ipv4Ip = addressToIpv4(ipAddr);
 

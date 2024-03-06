@@ -26,3 +26,6 @@ export const endpoint = Bun.env.ENDPOINT || aliyrnJson.endpoint;
 export const regionId = Bun.env.REGION_ID || aliyrnJson.regionId;
 export const vSwitchId = Bun.env.V_SWITCH_ID || "vsw-2zehmapcr6dqr0t1buk3h";
 export const securityGroupId = Bun.env.SECURITY_GROUP_ID || "sg-2ze8wux02843vfnxxmrb";
+
+export const isProd = Bun.env.NODE_ENV === "production";
+export const checkHeaders = Bun.env.CHECK_HEADERS || "x-forwarded-for;x-real-ip";
