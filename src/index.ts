@@ -1,5 +1,7 @@
 import { Elysia } from "elysia";
 import { ip } from "elysia-ip";
+import * as ipTools from "ip";
+
 import { swagger } from "@elysiajs/swagger";
 import { createInstance } from "@/service/create-instance";
 import { startInstance } from "@/service/start-instance";
@@ -166,13 +168,34 @@ const app = new Elysia()
   })
   // 設定 安全組 authorizeSecurityGroup
   .use(ip()).get("/setSecurity", async ({ ip }) => {
-    const result = await aliyunECS.authorizeSecurityGroup(true, true, true, ip?.toString() ?? "127.0.0.1");
+    const ipAddr = (ip as any).address;
+    const ipv4Ip = addressToIpv4(ipAddr);
+
+    if (!ipTools.isV4Format(ipv4Ip)) {
+      return "not a valid ipv4";
+    }
+
+    const result = await aliyunECS.authorizeSecurityGroup(true, true, true, ipv4Ip ?? "127.0.0.1");
     return result;
   })
   .listen(3000);
 
 clearInstanceJob.start();
 // forceClearJob.start();
+
+function addressToIpv4(address: string) {
+  // 正則表達式匹配 IPv4 映射的 IPv6 地址
+  const regex = /^::ffff:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/;
+  const match = address.match(regex);
+
+  // 如果匹配成功，則返回匹配的 IPv4 地址
+  if (match) {
+    return match[1];
+  }
+
+  // 如果輸入的不是有效的 IPv4 映射的 IPv6 地址，返回 null 或自定義錯誤
+  return address; // 或 throw new Error("不是有效的 IPv4 映射的 IPv6 地址");
+}
 
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`,
