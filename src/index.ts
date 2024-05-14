@@ -1,6 +1,7 @@
 import { Elysia } from "elysia";
 import { ip } from "elysia-ip";
 import * as ipTools from "ip";
+import { CronTime } from "cron";
 
 import { swagger } from "@elysiajs/swagger";
 import { createInstance } from "@/service/create-instance";
@@ -15,12 +16,34 @@ import { generatePACFile } from "@/service/pac-file";
 
 import { sqliteDB } from "@/sqlite/index";
 import { aliyunECS } from "@/aliyun/index";
-import { clearInstanceJob } from "@/cron-tab/index";
+import { clearInstanceJob, forceClearJob } from "@/cron-tab/index";
 
-import { getPrxoyTarget, getXApiKey, getVersion, checkHeaders, isProd } from "@/env/env-manager";
+import {
+  checkHeaders,
+  enableForceClear,
+  forceCronTime,
+  getPrxoyTarget,
+  getVersion,
+  getXApiKey,
+  isProd,
+} from "@/env/env-manager";
 
 // 建立中變數, 用於避免重複執行
 let creating = false;
+
+function addressToIpv4(address: string) {
+  // 正則表達式匹配 IPv4 映射的 IPv6 地址
+  const regex = /^::ffff:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/;
+  const match = address.match(regex);
+
+  // 如果匹配成功，則返回匹配的 IPv4 地址
+  if (match) {
+    return match[1];
+  }
+
+  // 如果輸入的不是有效的 IPv4 映射的 IPv6 地址，返回 null 或自定義錯誤
+  return address; // 或 throw new Error("不是有效的 IPv4 映射的 IPv6 地址");
+}
 
 async function create() {
   console.log("create");
@@ -63,7 +86,6 @@ async function create() {
   console.log("done", { id });
 }
 
-
 const app = new Elysia()
   .onBeforeHandle(({ query, path }) => {
     // 排除檢查列表
@@ -74,7 +96,7 @@ const app = new Elysia()
 
     const apiKey = getXApiKey();
     if (apiKey && apiKey !== query.xApiKey) {
-      return { status: 401, body: 'Unauthorized' }
+      return { status: 401, body: "Unauthorized" };
     }
   })
   .use(
@@ -82,7 +104,7 @@ const app = new Elysia()
       path: "/swagger",
       documentation: {
         info: { version: getVersion(), title: "aliyun-proxy-api" },
-      }
+      },
     }),
   )
   // 建立實例
@@ -168,9 +190,8 @@ const app = new Elysia()
   })
   // 設定 安全組 authorizeSecurityGroup
   .use(ip({
-    checkHeaders: checkHeaders.split(";")
+    checkHeaders: checkHeaders.split(";"),
   })).get("/setSecurity", async ({ ip, request }) => {
-
     if (!isProd) {
       console.log("ip", ip);
       console.log("headers", JSON.stringify(request.headers, null, 2));
@@ -185,7 +206,12 @@ const app = new Elysia()
 
     await aliyunECS.revokeSecurityGroup();
 
-    const result = await aliyunECS.authorizeSecurityGroup(true, true, true, ipv4Ip ?? "127.0.0.1");
+    const result = await aliyunECS.authorizeSecurityGroup(
+      true,
+      true,
+      true,
+      ipv4Ip ?? "127.0.0.1",
+    );
     return result;
   })
   // 設定 安全組 authorizeSecurityGroup 但是 IP 直接指定 由下一個 Path
@@ -197,20 +223,9 @@ const app = new Elysia()
   .listen(3000);
 
 clearInstanceJob.start();
-// forceClearJob.start();
-
-function addressToIpv4(address: string) {
-  // 正則表達式匹配 IPv4 映射的 IPv6 地址
-  const regex = /^::ffff:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/;
-  const match = address.match(regex);
-
-  // 如果匹配成功，則返回匹配的 IPv4 地址
-  if (match) {
-    return match[1];
-  }
-
-  // 如果輸入的不是有效的 IPv4 映射的 IPv6 地址，返回 null 或自定義錯誤
-  return address; // 或 throw new Error("不是有效的 IPv4 映射的 IPv6 地址");
+if (enableForceClear) {
+  forceClearJob.cronTime = new CronTime(forceCronTime);
+  forceClearJob.start();
 }
 
 console.log(
