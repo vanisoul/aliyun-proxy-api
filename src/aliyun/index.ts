@@ -3,7 +3,16 @@ import ECSClient, * as ECSClientLib from "@alicloud/ecs20140526";
 import * as Util from "@alicloud/tea-util";
 import { v4 as uuidv4 } from "uuid";
 
-import { getConnectTimeout, accessKeyId, accessKeySecret, endpoint, regionId, vSwitchId, securityGroupId } from "@/env/env-manager";
+import {
+  accessKeyId,
+  accessKeySecret,
+  endpoint,
+  getConnectTimeout,
+  internetMaxBandwidthOut,
+  regionId,
+  securityGroupId,
+  vSwitchId,
+} from "@/env/env-manager";
 
 // 建立一個阿里雲客戶端對象
 class Client {
@@ -75,9 +84,9 @@ class Client {
     console.log("============== describeInstanceStatus ==============");
     const describeInstancesRequest = new ECSClientLib
       .DescribeInstanceStatusRequest({
-        regionId: this.regionId,
-        instanceId: [id],
-      });
+      regionId: this.regionId,
+      instanceId: [id],
+    });
     const runtime = new Util.RuntimeOptions({
       connectTimeout: this.connectTimeout,
     });
@@ -131,7 +140,7 @@ class Client {
       instanceName,
       instanceType: "ecs.t6-c2m1.large",
       internetChargeType: "PayByTraffic",
-      internetMaxBandwidthOut: 50,
+      internetMaxBandwidthOut,
       systemDisk: reqDisk,
       instanceChargeType: "PostPaid",
       period: 1,
@@ -139,10 +148,12 @@ class Client {
       securityEnhancementStrategy: "Active",
       vSwitchId: vSwitchId,
       dryRun: false,
-      securityGroupId
+      securityGroupId,
     });
 
-    const createInstanceRequest = new ECSClientLib.CreateInstanceRequest(reqInstance);
+    const createInstanceRequest = new ECSClientLib.CreateInstanceRequest(
+      reqInstance,
+    );
 
     const runtime = new Util.RuntimeOptions({
       connectTimeout: this.connectTimeout,
@@ -160,22 +171,26 @@ class Client {
   // 清空原安全組規則
   async revokeSecurityGroup() {
     console.log("============== revokeSecurityGroup ==============");
-    const describeSecurityGroupAttributeRequest = new ECSClientLib.DescribeSecurityGroupAttributeRequest({
+    const describeSecurityGroupAttributeRequest = new ECSClientLib
+      .DescribeSecurityGroupAttributeRequest({
       securityGroupId: securityGroupId,
       regionId: this.regionId,
-    })
+    });
     const runtime = new Util.RuntimeOptions({
       connectTimeout: this.connectTimeout,
     });
-    const describeSecurityGroupAttributeRespond = await this.client.describeSecurityGroupAttributeWithOptions(
-      describeSecurityGroupAttributeRequest,
-      runtime,
-    );
+    const describeSecurityGroupAttributeRespond = await this.client
+      .describeSecurityGroupAttributeWithOptions(
+        describeSecurityGroupAttributeRequest,
+        runtime,
+      );
 
-    const securityGroupAttribute = describeSecurityGroupAttributeRespond.body.permissions?.permission;
+    const securityGroupAttribute = describeSecurityGroupAttributeRespond.body
+      .permissions?.permission;
     if (securityGroupAttribute) {
       for (const rule of securityGroupAttribute) {
-        const revokeSecurityGroupRequest = new ECSClientLib.RevokeSecurityGroupRequest({
+        const revokeSecurityGroupRequest = new ECSClientLib
+          .RevokeSecurityGroupRequest({
           regionId: this.regionId,
           ipProtocol: rule.ipProtocol,
           portRange: rule.portRange,
@@ -195,10 +210,16 @@ class Client {
   }
 
   // 設定安全組規則 都為最優先 1, 第一個參數為 TCP 開/關, 第二個參數為 UDP 開/關, 第三個參數為 icmp 開/關, 第四個參數為 目標 IP
-  async authorizeSecurityGroup(openTcp: boolean, openUdp: boolean, openIcmp: boolean, ip: string) {
+  async authorizeSecurityGroup(
+    openTcp: boolean,
+    openUdp: boolean,
+    openIcmp: boolean,
+    ip: string,
+  ) {
     console.log("============== authorizeSecurityGroup ==============");
     if (openTcp) {
-      const authorizeSecurityGroupRequest = new ECSClientLib.AuthorizeSecurityGroupRequest({
+      const authorizeSecurityGroupRequest = new ECSClientLib
+        .AuthorizeSecurityGroupRequest({
         regionId: this.regionId,
         ipProtocol: "TCP",
         portRange: "1/65535",
@@ -215,7 +236,8 @@ class Client {
     }
 
     if (openUdp) {
-      const authorizeSecurityGroupRequest = new ECSClientLib.AuthorizeSecurityGroupRequest({
+      const authorizeSecurityGroupRequest = new ECSClientLib
+        .AuthorizeSecurityGroupRequest({
         regionId: this.regionId,
         ipProtocol: "UDP",
         portRange: "1/65535",
@@ -232,7 +254,8 @@ class Client {
     }
 
     if (openIcmp) {
-      const authorizeSecurityGroupRequest = new ECSClientLib.AuthorizeSecurityGroupRequest({
+      const authorizeSecurityGroupRequest = new ECSClientLib
+        .AuthorizeSecurityGroupRequest({
         regionId: this.regionId,
         ipProtocol: "ICMP",
         portRange: "-1/-1",
@@ -302,9 +325,9 @@ class Client {
   async getInstanceIp(id: string): Promise<string | undefined> {
     const describeInstancesRequest = new ECSClientLib
       .AllocatePublicIpAddressRequest({
-        regionId: this.regionId,
-        instanceId: id,
-      });
+      regionId: this.regionId,
+      instanceId: id,
+    });
     const runtime = new Util.RuntimeOptions({
       connectTimeout: this.connectTimeout,
     });
@@ -402,4 +425,9 @@ class Client {
   }
 }
 
-export const aliyunECS = new Client(accessKeyId, accessKeySecret, endpoint, regionId);
+export const aliyunECS = new Client(
+  accessKeyId,
+  accessKeySecret,
+  endpoint,
+  regionId,
+);

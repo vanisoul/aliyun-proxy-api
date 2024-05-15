@@ -31,6 +31,8 @@ export const vSwitchId = Bun.env.V_SWITCH_ID || "vsw-2zehmapcr6dqr0t1buk3h";
 export const securityGroupId = Bun.env.SECURITY_GROUP_ID ||
   "sg-2ze8wux02843vfnxxmrb";
 
+export const internetMaxBandwidthOut = Bun.env.INTERNET_MAX_BANDWIDTH_OUT || 50;
+
 export const isProd = Bun.env.NODE_ENV === "production";
 export const checkHeaders = Bun.env.CHECK_HEADERS ||
   "x-forwarded-for;x-real-ip";

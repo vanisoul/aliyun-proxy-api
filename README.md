@@ -22,6 +22,7 @@
 - ENABLE_FORCE_CLEAR: 是否啟動每日強制清除實體，預設 `false`。
 - FORCE_CLEAR_TIME: 每日強制清除實體時間，使用 CronTab 格式，當
   `ENABLE_FORCE_CLEAR` 啟動才有作用，預設 `0 4 * * *`。
+- internetMaxBandwidthOut: 頻寬限制預設 50，最大 100，單位Mbps
 
 ### 安裝依賴
 
