@@ -47,9 +47,12 @@ class Client {
     const describeInstancesRequest = new ECSClientLib.DescribeInstancesRequest({
       regionId: this.regionId,
     });
+
     const runtime = new Util.RuntimeOptions({
       connectTimeout: this.connectTimeout,
+      readTimeout: this.connectTimeout,
     });
+
     const resp = await this.client.describeInstancesWithOptions(
       describeInstancesRequest,
       runtime,
@@ -87,9 +90,12 @@ class Client {
       regionId: this.regionId,
       instanceId: [id],
     });
+
     const runtime = new Util.RuntimeOptions({
       connectTimeout: this.connectTimeout,
+      readTimeout: this.connectTimeout,
     });
+
     const resp = await this.client.describeInstanceStatusWithOptions(
       describeInstancesRequest,
       runtime,
@@ -109,9 +115,12 @@ class Client {
       regionId: this.regionId,
       instanceIds: [id],
     });
+
     const runtime = new Util.RuntimeOptions({
       connectTimeout: this.connectTimeout,
+      readTimeout: this.connectTimeout,
     });
+
     const resp = await this.client.describeInstancesWithOptions(
       describeInstancesRequest,
       runtime,
@@ -157,7 +166,9 @@ class Client {
 
     const runtime = new Util.RuntimeOptions({
       connectTimeout: this.connectTimeout,
+      readTimeout: this.connectTimeout,
     });
+
     const resp = await this.client.createInstanceWithOptions(
       createInstanceRequest,
       runtime,
@@ -176,9 +187,12 @@ class Client {
       securityGroupId: securityGroupId,
       regionId: this.regionId,
     });
+
     const runtime = new Util.RuntimeOptions({
       connectTimeout: this.connectTimeout,
+      readTimeout: this.connectTimeout,
     });
+
     const describeSecurityGroupAttributeRespond = await this.client
       .describeSecurityGroupAttributeWithOptions(
         describeSecurityGroupAttributeRequest,
@@ -197,9 +211,12 @@ class Client {
           sourceCidrIp: rule.sourceCidrIp,
           securityGroupId: securityGroupId,
         });
+
         const runtime = new Util.RuntimeOptions({
           connectTimeout: this.connectTimeout,
+          readTimeout: this.connectTimeout,
         });
+
         await this.client.revokeSecurityGroupWithOptions(
           revokeSecurityGroupRequest,
           runtime,
@@ -226,9 +243,12 @@ class Client {
         sourceCidrIp: ip,
         securityGroupId: securityGroupId,
       });
+
       const runtime = new Util.RuntimeOptions({
         connectTimeout: this.connectTimeout,
+        readTimeout: this.connectTimeout,
       });
+
       await this.client.authorizeSecurityGroupWithOptions(
         authorizeSecurityGroupRequest,
         runtime,
@@ -244,9 +264,12 @@ class Client {
         sourceCidrIp: ip,
         securityGroupId: securityGroupId,
       });
+
       const runtime = new Util.RuntimeOptions({
         connectTimeout: this.connectTimeout,
+        readTimeout: this.connectTimeout,
       });
+
       await this.client.authorizeSecurityGroupWithOptions(
         authorizeSecurityGroupRequest,
         runtime,
@@ -262,9 +285,12 @@ class Client {
         sourceCidrIp: ip,
         securityGroupId: securityGroupId,
       });
+
       const runtime = new Util.RuntimeOptions({
         connectTimeout: this.connectTimeout,
+        readTimeout: this.connectTimeout,
       });
+
       await this.client.authorizeSecurityGroupWithOptions(
         authorizeSecurityGroupRequest,
         runtime,
@@ -286,9 +312,12 @@ class Client {
         instanceId: ids,
         force: true,
       });
+
       const runtime = new Util.RuntimeOptions({
         connectTimeout: this.connectTimeout,
+        readTimeout: this.connectTimeout,
       });
+
       const resp = await this.client.deleteInstancesWithOptions(
         deleteInstanceRequest,
         runtime,
@@ -309,9 +338,12 @@ class Client {
     const startInstanceRequest = new ECSClientLib.StartInstanceRequest({
       instanceId: id,
     });
+
     const runtime = new Util.RuntimeOptions({
       connectTimeout: this.connectTimeout,
+      readTimeout: this.connectTimeout,
     });
+
     const resp = await this.client.startInstanceWithOptions(
       startInstanceRequest,
       runtime,
@@ -328,9 +360,12 @@ class Client {
       regionId: this.regionId,
       instanceId: id,
     });
+
     const runtime = new Util.RuntimeOptions({
       connectTimeout: this.connectTimeout,
+      readTimeout: this.connectTimeout,
     });
+
     const resp = await this.client.allocatePublicIpAddressWithOptions(
       describeInstancesRequest,
       runtime,
@@ -360,9 +395,12 @@ class Client {
       contentEncoding: "PlainText",
       timeout: 600,
     });
+
     const runtime = new Util.RuntimeOptions({
       connectTimeout: this.connectTimeout,
+      readTimeout: this.connectTimeout,
     });
+
     const resp = await this.client.runCommandWithOptions(
       invokeCommandRequest,
       runtime,
@@ -376,9 +414,12 @@ class Client {
         includeOption: true,
       },
     );
+
     const runtime2 = new Util.RuntimeOptions({
       connectTimeout: this.connectTimeout,
+      readTimeout: this.connectTimeout,
     });
+
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     while (true) {
