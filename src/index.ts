@@ -1,4 +1,4 @@
-import { Elysia } from "elysia";
+import { Elysia, t } from "elysia";
 import { ip } from "elysia-ip";
 import * as ipTools from "ip";
 import { CronTime } from "cron";
@@ -27,6 +27,10 @@ import {
   getXApiKey,
   isProd,
 } from "@/env/env-manager";
+
+const queryStringSchema = t.Object({
+  xApiKey: t.String(),
+});
 
 // 建立中變數, 用於避免重複執行
 let creating = false;
@@ -127,6 +131,8 @@ const app = new Elysia()
 
     // 回傳已收到建立指令, 並在背景執行, 如果需要知道狀態, 請使用 /ids & /status/:id
     return "start create, please check /ids & /status/:id";
+  }, {
+    query: queryStringSchema,
   })
   // 取得所有 id
   .get("/ids", async () => {
@@ -135,12 +141,16 @@ const app = new Elysia()
       instance.instanceId
     );
     return ids;
+  }, {
+    query: queryStringSchema,
   })
   // 根據 id 刪除實例
   .get("/delete/:id", async ({ params: { id } }) => {
     sqliteDB.deleteInstance(id);
     const result = await clearInstance();
     return result;
+  }, {
+    query: queryStringSchema,
   })
   .get("/delete/", async () => {
     const instances = sqliteDB.getInstances();
@@ -148,6 +158,8 @@ const app = new Elysia()
     sqliteDB.deleteInstances(ids);
     const result = await clearInstance();
     return result;
+  }, {
+    query: queryStringSchema,
   })
   .get("/clear", async () => {
     const result = await clearInstance();
@@ -156,6 +168,8 @@ const app = new Elysia()
     } else {
       return "instance deleted: " + result.join(", ");
     }
+  }, {
+    query: queryStringSchema,
   })
   // 根據 id 得到實例狀態
   .get("/status/:id", async ({ params: { id } }) => {
@@ -164,9 +178,13 @@ const app = new Elysia()
       return { msg: "id not found" };
     }
     return result;
+  }, {
+    query: queryStringSchema,
   })
   // 取得所有實例狀態
-  .get("/list", () => sqliteDB.getInstances())
+  .get("/list", () => sqliteDB.getInstances(), {
+    query: queryStringSchema,
+  })
   // 產生 proxy.pac
   .get("/pacfile/:id", async ({ params: { id } }) => {
     const instance = sqliteDB.getInstanceById(id);
@@ -175,6 +193,8 @@ const app = new Elysia()
     }
     const pacFile = generatePACFile(getPrxoyTarget(), instance.ip);
     return pacFile;
+  }, {
+    query: queryStringSchema,
   })
   .get("/pacfile", async () => {
     const instances = sqliteDB.getInstances().filter((instance) =>
@@ -187,15 +207,15 @@ const app = new Elysia()
     const instance = instances[Math.floor(Math.random() * instances.length)];
     const pacFile = generatePACFile(getPrxoyTarget(), instance.ip);
     return pacFile;
+  }, {
+    query: queryStringSchema,
   })
   // 設定 安全組 authorizeSecurityGroup
   .use(ip({
     checkHeaders: checkHeaders.split(";"),
   })).get("/setSecurity", async ({ ip, request }) => {
-    if (!isProd) {
-      console.log("ip", ip);
-      console.log("headers", JSON.stringify(request.headers, null, 2));
-    }
+    console.log("ip", ip);
+    console.log("headers", JSON.stringify(request.headers, null, 2));
 
     const ipAddr = (ip as any).address;
     const ipv4Ip = addressToIpv4(ipAddr);
@@ -213,12 +233,16 @@ const app = new Elysia()
       ipv4Ip ?? "127.0.0.1",
     );
     return result;
+  }, {
+    query: queryStringSchema,
   })
   // 設定 安全組 authorizeSecurityGroup 但是 IP 直接指定 由下一個 Path
-  .get("/setSecurity/:ip", async ({ params: { ip } }) => {
+  .get("/setSecurity/:ip", async ({ query, params: { ip } }) => {
     await aliyunECS.revokeSecurityGroup();
     const result = await aliyunECS.authorizeSecurityGroup(true, true, true, ip);
     return result;
+  }, {
+    query: queryStringSchema,
   })
   .listen(3000);
 
