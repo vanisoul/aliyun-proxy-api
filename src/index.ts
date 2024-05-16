@@ -213,6 +213,7 @@ const app = new Elysia()
   // 設定 安全組 authorizeSecurityGroup
   .use(ip({
     checkHeaders: checkHeaders.split(";"),
+    headersOnly: true,
   })).get("/setSecurity", async ({ ip, request }) => {
     console.log("ip", ip);
     console.log("headers", JSON.stringify(request.headers, null, 2));
