@@ -218,8 +218,7 @@ const app = new Elysia()
     console.log("ip", ip);
     console.log("headers", JSON.stringify(request.headers, null, 2));
 
-    const ipAddr = (ip as any).address;
-    const ipv4Ip = addressToIpv4(ipAddr);
+    const ipv4Ip = addressToIpv4(ip);
 
     if (!ipTools.isV4Format(ipv4Ip)) {
       return "not a valid ipv4";
@@ -238,7 +237,7 @@ const app = new Elysia()
     query: queryStringSchema,
   })
   // 設定 安全組 authorizeSecurityGroup 但是 IP 直接指定 由下一個 Path
-  .get("/setSecurity/:ip", async ({ query, params: { ip } }) => {
+  .get("/setSecurity/:ip", async ({ params: { ip } }) => {
     await aliyunECS.revokeSecurityGroup();
     const result = await aliyunECS.authorizeSecurityGroup(true, true, true, ip);
     return result;
@@ -248,7 +247,9 @@ const app = new Elysia()
   .listen(3000);
 
 clearInstanceJob.start();
+
 if (enableForceClear) {
+  console.log(`enableForceClear : ${forceCronTime}`);
   forceClearJob.cronTime = new CronTime(forceCronTime);
   forceClearJob.start();
 }

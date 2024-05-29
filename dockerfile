@@ -38,5 +38,5 @@ RUN mkdir -p /tmp/aliyundb/
 # 安裝專案相依套件
 RUN bun install --production --frozen-lockfile
 
-# 在容器啟動時運行 `bun run` 命令
-CMD ["bun", "run", "run"]
+# 在容器啟動時運行 `bun start` 命令
+CMD ["bun", "run", "start"]

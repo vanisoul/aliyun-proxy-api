@@ -3,7 +3,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts",
-    "run": "bun run src/index.ts"
+    "start": "bun run src/index.ts"
   },
   "dependencies": {
     "@alicloud/ecs20140526": "^3.0.13",
@@ -12,7 +12,7 @@
     "@elysiajs/swagger": "^0.7.4",
     "cron": "^3.1.6",
     "elysia": "^1.0.20",
-    "elysia-ip": "^1.0.5",
+    "elysia-ip": "^1.0.7",
     "ip": "^2.0.1",
     "uuid": "^9.0.1"
   },
