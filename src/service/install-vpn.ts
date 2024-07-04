@@ -7,13 +7,13 @@ const generateRandomAlphanumeric = (length = 10) =>
     .join("");
 
 export const installVpnStep = (psk: string, user: string, password: string) => [
-  "docker pull hwdsl2/ipsec-vpn-server",
+  "docker pull registry.cn-shanghai.aliyuncs.com/pry/vpn:latest",
   "rm -rf /tmp/vpn.env",
   "touch /tmp/vpn.env",
   `echo 'VPN_IPSEC_PSK=${psk}' >> /tmp/vpn.env`,
   `echo 'VPN_USER=${user}' >> /tmp/vpn.env`,
   `echo 'VPN_PASSWORD=${password}' >> /tmp/vpn.env`,
-  "sudo docker run --name ipsec-vpn-server --env-file /tmp/vpn.env -p 500:500/udp -p 4500:4500/udp -d --rm --privileged hwdsl2/ipsec-vpn-server",
+  "sudo docker run --name ipsec-vpn-server --env-file /tmp/vpn.env -p 500:500/udp -p 4500:4500/udp -d --rm --privileged registry.cn-shanghai.aliyuncs.com/pry/vpn:latest",
 ];
 
 // const VpnCheck = "Vpn --version";

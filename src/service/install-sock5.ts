@@ -2,8 +2,8 @@ import { aliyunECS } from "@/aliyun/index";
 import { sqliteDB } from "@/sqlite";
 
 export const installSocksStep = [
-  "docker pull serjs/go-socks5-proxy",
-  "sudo docker run --rm -d --name socks5 -p 1080:1080 serjs/go-socks5-proxy",
+  "docker pull registry.cn-shanghai.aliyuncs.com/pry/socks5:latest",
+  "sudo docker run --rm -d --name socks5 -p 1080:1080 registry.cn-shanghai.aliyuncs.com/pry/socks5:latest",
 ];
 
 const socksCheck = (ip: string) =>

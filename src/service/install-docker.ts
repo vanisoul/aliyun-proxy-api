@@ -11,6 +11,7 @@ export const installDockerStep = [
   `echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] http://mirrors.aliyun.com/docker-ce/linux/ubuntu "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null`,
   "sudo apt-get update",
   "sudo apt-get -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin",
+  "docker login --username=aliyun5374869714 -p suj4THgFb3Nz86oVfc registry.cn-shanghai.aliyuncs.com",
 ];
 
 const dockerCheck = "docker --version";
