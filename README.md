@@ -35,3 +35,8 @@
 ### 參考文件
 
 `http://localhost:3000/swagger`
+
+### 檢查影像安全
+
+- `docker build -t testimg .`
+- `docker scout cves local://testimg`
